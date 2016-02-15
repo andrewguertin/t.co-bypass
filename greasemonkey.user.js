@@ -9,24 +9,17 @@
 // ==/UserScript==
 
 var observer = new MutationObserver(function(mutations) {
-  var aTags = document.body.getElementsByTagName("a");
-  for (var i = 0; i < aTags.length; i++) {
-    var tag = aTags[i];
-    
-    if (tag.getAttribute("class") !== null && tag.getAttribute("class").indexOf("twitter-atreply") > -1) {
-      continue;
+  mutations.forEach(function(mutation) {
+    var node = mutation.target;
+    var as = node.querySelectorAll('a[href*="//t.co/"]');
+    for (var a of as) {
+      a.setAttribute("href", a.getAttribute("data-expanded-url")
+                          || a.getAttribute("data-full-url")
+                          || a.getAttribute("title")
+                          || a.getAttribute("href")
+      );
     }
-
-    if (tag.href && tag.href.indexOf("://t.co/") > -1) {
-      if (tag.getAttribute("data-expanded-url") !== "" && tag.getAttribute("data-expanded-url") !== null) {
-        tag.href = tag.getAttribute("data-expanded-url");
-      } else if (tag.getAttribute("data-full-url") !== "" && tag.getAttribute("data-full-url") !== null) {
-        tag.href = tag.getAttribute("data-full-url");
-      } else if (tag.getAttribute("title") !== "" && tag.getAttribute("title") !== null) {
-        tag.href = tag.getAttribute("title");
-      }
-    }
-  };
+  });
 });
 
 var config = { 
